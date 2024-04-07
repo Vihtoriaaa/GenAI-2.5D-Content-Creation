@@ -2,7 +2,7 @@ import bpy
 import sys
 import os
 from datetime import datetime
-from math import pi
+import numpy as np
 
 
 def load_image(image_path):
@@ -54,7 +54,7 @@ def add_light():
     bpy.context.collection.objects.link(light_object)
     light_object.location = (1, -2, 2)
 
-def import_3d_model(file_path, scale_factor=0.7):
+def import_3d_model(file_path, scale_factor=0.5):
     """
     Imports a 3D model file into the Blender scene.
 
@@ -62,7 +62,7 @@ def import_3d_model(file_path, scale_factor=0.7):
 
     Args:
       file_path (str): The path to the 3D model file.
-      scale_factor (float, optional): The scaling factor applied to the imported model. Default is 0.7.
+      scale_factor (float, optional): The scaling factor applied to the imported model. Default is 0.5.
     """
     supported_formats = {
         ".fbx": bpy.ops.import_scene.fbx,
@@ -82,8 +82,8 @@ def import_3d_model(file_path, scale_factor=0.7):
         print(f"Unsupported file format: {file_format}")
 
 def set_output_path():
-    """Sets the output path for the rendered image with a current date (ex: 2024-03-31 9:46)."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    """Sets the output path for the rendered image with a current date (ex: 2024-03-31-9-46-22)."""
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     output_filename = f"{timestamp}.png"
     output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../rendered_results/", output_filename)
     return output_path
@@ -105,16 +105,21 @@ def move_object(obj_name, x, z, image_width, image_height, ratio):
 
     obj_x = (x / image_width) * 2 * ratio
     obj_z = 2 - (z / image_height) * 2
-    model_3D.location = (obj_x, 0, obj_z)
+    model_3D.location = (obj_x, -0.3, obj_z)
 
 def rotate_object(obj_name, normal_vector):
+    """Rotates the object considering surface normal vector."""
     obj_list = bpy.context.scene.objects
     model_3D = obj_list[obj_name]
     
     x_norm, y_norm, z_norm = normal_vector
-    #z_rotation = pi / z_norm
-    # z_rotation = z_norm * 360 / pi
-    model_3D.rotation_euler = (1.5708, 0, 0)
+    rotation_angle_rad = np.arccos(y_norm * (-1) / np.sqrt(x_norm**2 + y_norm**2))
+    rotation_angle_rad = -rotation_angle_rad if x_norm < 0 else rotation_angle_rad
+
+    current_rotation_x = model_3D.rotation_euler[0]
+    current_rotation_z = model_3D.rotation_euler[2]
+
+    model_3D.rotation_euler = (current_rotation_x, rotation_angle_rad, current_rotation_z)
 
 def main():
     """The main function orchestrating the creation of a Blender scene."""
@@ -129,7 +134,6 @@ def main():
     # Calculate image dimensions and aspect ratio
     image_width, image_height = get_image_dimensions(depth_image)
     aspect_ratio = image_width / image_height
-    # print("aspect:", aspect_ratio)
 
     # Set the plane size based on the aspect ratio
     plane_size_x = 2 * aspect_ratio
@@ -146,6 +150,8 @@ def main():
     displace_texture = bpy.data.textures.new("DisplaceTexture", type='IMAGE')
     displace_modifier.texture = displace_texture
     displace_texture.image = depth_image
+    # Set the strength of the Displace modifier
+    displace_modifier.strength = 0.8
 
     # Switch to Edit mode and perform a Shade smooth of the object
     bpy.ops.object.editmode_toggle()
@@ -198,6 +204,9 @@ def main():
     move_object(imported_obj_name[0], x, z, image_width, image_height, aspect_ratio)
     rotate_object(imported_obj_name[0], normal_vector)
 
+    # Deselect all the objects
+    bpy.ops.object.select_all(action='DESELECT')
+
     # Render and save the image
     output_path = set_output_path()
     render_and_save(output_path)
@@ -210,8 +219,6 @@ if __name__ == "__main__":
         model_3d_path = sys.argv[6]
         object_coordinates = int(sys.argv[7]), int(sys.argv[8])
         normal_vector = float(sys.argv[9]), float(sys.argv[10]), float(sys.argv[11])
-        # print(object_coordinates)
-        # print(normal_vector)
     else:
         print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm")
         sys.exit(1)
@@ -222,5 +229,3 @@ if __name__ == "__main__":
         sys.exit(1)
 
     main()
-
-# blender -P blender.py -- ../depth_maps/inverted_depth_map0.png ../to_depth/0.png ../3d_objects/worm.fbx 100 100 0.1 0.2 0.3

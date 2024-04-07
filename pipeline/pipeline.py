@@ -43,7 +43,7 @@ class Pipeline():
         root = Tk()
         root.withdraw()
         file_path = filedialog.askopenfilename(title="Select 3D Object File",
-                                                filetypes=[("Object files", "*.fbx *.stl")])
+                                                filetypes=[("Object files", "*.fbx")])
         return file_path
 
     def choose_point(self, image_path):
@@ -78,9 +78,10 @@ class Pipeline():
     def get_normal_map(self):
         """Calculates normal vectors for the entire image."""
         self.depth_to_normal_converter.calculate_normals()
-        x, y = self.selected_point
+
+    def get_surface_normal_vector(self, point):
+        x, y = point
         self.normal_to_surface = self.depth_to_normal_converter.normals_map[y, x]
-        # self.depth_to_normal_converter.save_normal_map("lol.png")
 
     def generate_scene(self):
         """Calls Blender for scene generation and object placement."""
@@ -111,15 +112,30 @@ class Pipeline():
         while True:
             cv2.imshow("Normal to the Surface at the Selected Point", image)
             key = cv2.waitKey(1) & 0xFF
-            # Press 'ESC' to exit
-            if key == 27:
+
+            if key == ord('r') or key == ord('R'):
+                # Allow user to reselect the point by pressing 'R'
+                cv2.destroyAllWindows()
+                self.selected_point = self.choose_point(self.original_image_path)
+                self.get_surface_normal_vector(self.selected_point)
+                x, y = self.selected_point
+                image = cv2.imread(self.original_image_path)
+                end_point = (int(x + arrow_length * self.normal_to_surface[0]), int(y + arrow_length * self.normal_to_surface[1]))
+                cv2.arrowedLine(image, (x, y), end_point, (0, 255, 0), thickness=2)
+
+            # Press 'ESC' or 'Enter' to exit
+            elif key == 27 or key == 13:
+                cv2.destroyAllWindows()
                 break
 
-        cv2.destroyAllWindows()
+    def run_pipeline(self):
+        """Run the pipeline."""
+        self.get_normal_map()
+        self.get_surface_normal_vector(self.selected_point)
+        self.draw_normal_to_surface()
+        self.generate_scene()
 
 
 if __name__ == "__main__":
     pipeline = Pipeline()
-    pipeline.get_normal_map()
-    pipeline.draw_normal_to_surface()
-    pipeline.generate_scene()
+    pipeline.run_pipeline()
