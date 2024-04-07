@@ -20,6 +20,7 @@ class Pipeline():
         """
         self.original_image_path = self.upload_image("Select Original Image File")
         self.depth_map_path = self.upload_image("Select Depth Image File")
+        self.hdri_path = self.upload_image("Select HDRI Image File")
         self.object_3d_path = self.upload_3d_object()
         self.selected_point = self.choose_point(self.original_image_path)
         self.max_depth = 255
@@ -92,6 +93,7 @@ class Pipeline():
             "--",
             self.depth_map_path,
             self.original_image_path,
+            self.hdri_path,
             self.object_3d_path,
             str(self.selected_point[0]),
             str(self.selected_point[1]),

@@ -41,27 +41,39 @@ def add_camera():
     bpy.context.object.data.type = 'ORTHO'
     bpy.context.object.data.ortho_scale = 2
 
-def add_light():
-    """Adds a point light with default energy of 100 to the Blender scene."""
-    # Create a new light data block with the specified type
-    light_data = bpy.data.lights.new(name="Light-data", type='POINT')
-    light_data.energy = 100
+def add_light(hdri_path):
+    """
+    Adds an HDRI image as light source.
 
-    # Create a new object and link it to the light data
-    light_object = bpy.data.objects.new(name="Light", object_data=light_data)
+    Args:
+        hdri_path (str): The file path to the HDRI image.
+    """
+    world = bpy.context.scene.world
+    world.use_nodes = True
+    node_tree = world.node_tree
+    enode = node_tree.nodes.new("ShaderNodeTexEnvironment")
+    enode.image = bpy.data.images.load(hdri_path)
+    node_tree.links.new(enode.outputs['Color'], node_tree.nodes['Background'].inputs['Color'])
+    node_tree.nodes['Background'].inputs['Strength'].default_value = 1.5
 
-    # Link the light object to the current collection in the scene
-    bpy.context.collection.objects.link(light_object)
-    light_object.location = (1, -2, 2)
+def adjust_rendering_settings():
+    scene = bpy.context.scene
+    scene.eevee.use_gtao = True
+    scene.eevee.gtao_distance = 0.3
+    scene.eevee.gtao_quality = 0.3
+    scene.eevee.use_bloom = True
+    scene.eevee.shadow_cube_size = '1024'
+    scene.view_settings.view_transform = 'Filmic'
+    scene.view_settings.look = 'Medium High Contrast'
 
-def import_3d_model(file_path, scale_factor=0.5):
+def import_3d_model(object_path, scale_factor=0.5):
     """
     Imports a 3D model file into the Blender scene.
 
     This function supports importing 3D models in FBX (.fbx) and STL (.stl) formats.
 
     Args:
-      file_path (str): The path to the 3D model file.
+      object_path (str): The path to the 3D model file.
       scale_factor (float, optional): The scaling factor applied to the imported model. Default is 0.5.
     """
     supported_formats = {
@@ -69,12 +81,12 @@ def import_3d_model(file_path, scale_factor=0.5):
         ".stl": bpy.ops.import_mesh.stl,
     }
     
-    _, file_extension = os.path.splitext(file_path)
+    _, file_extension = os.path.splitext(object_path)
     file_format = file_extension.lower()
 
     if file_format in supported_formats:
         try:
-            supported_formats[file_format](filepath=file_path)
+            supported_formats[file_format](filepath=object_path)
             bpy.ops.transform.resize(value=(scale_factor, scale_factor, scale_factor))
         except Exception as e:
             print(f"Importing {file_format} failed: {e}")
@@ -105,7 +117,7 @@ def move_object(obj_name, x, z, image_width, image_height, ratio):
 
     obj_x = (x / image_width) * 2 * ratio
     obj_z = 2 - (z / image_height) * 2
-    model_3D.location = (obj_x, -0.3, obj_z)
+    model_3D.location = (obj_x, -0.1, obj_z)
 
 def rotate_object(obj_name, normal_vector):
     """Rotates the object considering surface normal vector."""
@@ -190,8 +202,6 @@ def main():
     # add camera and change its resolution to image's size
     add_camera()
     set_render_resolution(image_width, image_height)
-    # add a point light source to the scene
-    add_light()
 
     old_objs = set(bpy.context.scene.objects)
     # import selected 3D model
@@ -204,28 +214,33 @@ def main():
     move_object(imported_obj_name[0], x, z, image_width, image_height, aspect_ratio)
     rotate_object(imported_obj_name[0], normal_vector)
 
+    # add hdri as a light source to the scene
+    add_light(hdri_image_path)
+
     # Deselect all the objects
     bpy.ops.object.select_all(action='DESELECT')
 
-    # Render and save the image
+    # Adjust rendering settings, render the image and save it
+    adjust_rendering_settings()
     output_path = set_output_path()
     render_and_save(output_path)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 12:
+    if len(sys.argv) == 13:
         depth_map_path = sys.argv[4]
         texture_image_path = sys.argv[5]
-        model_3d_path = sys.argv[6]
-        object_coordinates = int(sys.argv[7]), int(sys.argv[8])
-        normal_vector = float(sys.argv[9]), float(sys.argv[10]), float(sys.argv[11])
+        hdri_image_path = sys.argv[6]
+        model_3d_path = sys.argv[7]
+        object_coordinates = int(sys.argv[8]), int(sys.argv[9])
+        normal_vector = float(sys.argv[10]), float(sys.argv[11]), float(sys.argv[12])
     else:
-        print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm")
+        print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/hdri_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm")
         sys.exit(1)
 
-    # Check if the file exists for both depth map and texture image
-    if not os.path.exists(depth_map_path) or not os.path.exists(texture_image_path) or not os.path.exists(model_3d_path):
-        print("Image file not found. Check your file paths.")
+    # Check if the file exists for depth map, texture image, hdri image, and 3D object
+    if not os.path.exists(depth_map_path) or not os.path.exists(texture_image_path) or not os.path.exists(hdri_image_path) or not os.path.exists(model_3d_path):
+        print("Image or object file not found. Check your file paths.")
         sys.exit(1)
 
     main()
