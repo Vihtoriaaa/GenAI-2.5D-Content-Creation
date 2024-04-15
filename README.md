@@ -56,11 +56,45 @@ These commands will create a new Conda environment named 'env', install all the 
 <summary><b>GPU configuration run </b></summary>
 
 1.  
-   TODO
+   Run  `cd pipeline/` to move to folder with pipeline code.
    
-2.  Run `cd pipeline/` to move to folder with pipeline code.
-3.  Run `python pipeline.py` to launch the pipeline.
-4.  You're done 🎉
+2.  Run `python gpu_pipeline.py --prompt "{your scene description}"` to launch the pipeline.
+3.  You're done 🎉 Wait till the pipeline finishes its execution.
+
+Other command line arguments that can be provided can be seen from the table below:
+| Name | Description | Type | Default Value |
+| ------- | --------- | ---- | ------------- |
+| `negative_prompt` | Negative text promp. | str | `""` (empty string) |
+| `width` | Generated image width in pixels | int | `1024` |
+| `height` | Generated image height in pixels | int | `1024` |
+| `steps` | Number of steps to run the generation process | int | `30` |
+| `sampler_name` | Name of the sampler to use | str | `"DPM++ 2M Karras"` |
+| `cfg_scale` | CFG scale number | int | `7` |
+| `seed` | Seed for reproducibility (-1 for random) | int | `-1` |
+| `checkpoint` | Stable Diffusion checkpoint | str | `"juggernautXL_v7Rundiffusion.safetensors [0724518c6b]"` |
+| `marigold_checkpoint` | Marigold checkpoint path or hub name | str | `"prs-eth/marigold-lcm-v1-0"` |
+
+Additional Options for certain arguments:
+
+- **`sampler_name`**:
+  - Choices: `"DPM++ 2M Karras"`, `"Euler a"`, `"DPM++ SDE Karras"`
+
+- **`checkpoint`**:
+  - Choices:
+    - `"juggernautXL_v7Rundiffusion.safetensors [0724518c6b]"`
+    - `"v1-5-pruned-emaonly.safetensors [6ce0161689]"`
+
+- **`marigold_checkpoint`**:
+  - Choices:
+    - `"prs-eth/marigold-lcm-v1-0"` (LCM version - faster speed)
+    - `"prs-eth/marigold-v1-0"`
+    - `"Bingxin/Marigold"`
+
+To use any of the arguments shown in the table, include them in the command along with `--prompt`. Here's an example:
+
+```bash
+python gpu_pipeline.py --prompt "Your text prompt here" --negative_prompt "Your negative text prompt here" --steps 15
+```
 </details>
 
 
@@ -71,8 +105,8 @@ These commands will create a new Conda environment named 'env', install all the 
    Add generated scene image, its depth map, and selected 3D object to appropriate folders.
    
 2.  Run `cd pipeline/` to move to folder with pipeline code.
-3.  Run `python pipeline.py` to launch the pipeline.
-4.  You're done 🎉
+3.  Run `python cpu_pipeline.py` to launch the pipeline.
+4.  You're done 🎉 Wait till the pipeline finishes its execution.
 </details>
 
 ### License
