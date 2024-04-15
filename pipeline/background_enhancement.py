@@ -1,8 +1,9 @@
+import os
 import io
-from PIL import Image
-import numpy as np
 import cv2
-from datetime import datetime
+import argparse
+import numpy as np
+from PIL import Image
 
 
 def image_to_hdri(image: np.ndarray, scale: float = 1) -> np.ndarray:
@@ -88,7 +89,31 @@ def generate_hdri_from_existing_image(image_path, output_path, scale=1):
 
 
 if __name__ == '__main__':
-    current_date = datetime.now().strftime("%m-%d_%H-%M")
-    image_path = "../to_depth/0.png"
-    output_path = f"../hdri_images/hdri_{current_date}.png"
-    generate_hdri_from_existing_image(image_path=image_path, output_path=output_path)
+    parser = argparse.ArgumentParser(
+        description="Generate HDRI image."
+    )
+    parser.add_argument(
+        "--input_image_path",
+        type=str,
+        help="Input image path to use for HDRI image generation.",
+        required=True
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        required=False,
+        help="Output image directory."
+    )
+    args = parser.parse_args()
+
+    image_path = args.input_image_path
+    root, ext = os.path.splitext(image_path)
+
+    if args.output_dir:
+        output_dir = args.output_dir
+        output_hdri_path = os.path.join(output_dir, f"{os.path.basename(root)}_hdri{ext}")
+    else:
+        output_dir = os.path.join(os.path.dirname(image_path), "results")
+        output_hdri_path =  f"{root}_hdri{ext}"
+
+    generate_hdri_from_existing_image(image_path=image_path, output_path=output_hdri_path)

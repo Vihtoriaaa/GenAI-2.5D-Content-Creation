@@ -1,6 +1,6 @@
 import cv2
-import numpy as np
 import argparse
+import numpy as np
 
 
 class DepthToNormalMap:
@@ -211,5 +211,3 @@ if __name__ == "__main__":
                 break
 
         cv2.destroyAllWindows()
-
-# python depthToNormal.py --input inverted_depth_map1.png --norm_map_path normals_comparison/normalmap255.png --draw_points y --points_map_path normals_comparison/drawing255.png

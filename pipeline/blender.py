@@ -1,12 +1,14 @@
+import os
 import bpy
 import sys
-import os
-from datetime import datetime
 import numpy as np
+from datetime import datetime
 
 
 def load_image(image_path):
     """Loads an image file into Blender."""
+    if os.name == "nt":  # windows os
+        image_path = os.path.abspath(image_path)
     try:
         return bpy.data.images.load(image_path)
     except Exception as e:
@@ -52,19 +54,28 @@ def add_light(hdri_path):
     world.use_nodes = True
     node_tree = world.node_tree
     enode = node_tree.nodes.new("ShaderNodeTexEnvironment")
-    enode.image = bpy.data.images.load(hdri_path)
+    hdri_image = load_image(hdri_path)
+    hdri_image.source = 'GENERATED'
+    hdri_image.colorspace_settings.name = 'Non-Color'
+    enode.image = hdri_image
     node_tree.links.new(enode.outputs['Color'], node_tree.nodes['Background'].inputs['Color'])
-    node_tree.nodes['Background'].inputs['Strength'].default_value = 1.5
+    node_tree.nodes['Background'].inputs['Strength'].default_value = 1
 
-def adjust_rendering_settings():
+def adjust_rendering_settings(enable_gpu=False):
     scene = bpy.context.scene
-    scene.eevee.use_gtao = True
-    scene.eevee.gtao_distance = 0.3
-    scene.eevee.gtao_quality = 0.3
-    scene.eevee.use_bloom = True
-    scene.eevee.shadow_cube_size = '1024'
+    scene.render.engine = 'CYCLES'
+    scene.cycles.use_gtao = True
+    scene.cycles.gtao_distance = 0.3
+    scene.cycles.gtao_quality = 0.3
+    scene.cycles.use_bloom = True
+    scene.cycles.shadow_cube_size = '1024'
+    scene.cycles.use_denoising = True
+    scene.cycles.samples = 200
+    scene.cycles.device = 'GPU' if enable_gpu else 'CPU'
     scene.view_settings.view_transform = 'Filmic'
-    scene.view_settings.look = 'Medium High Contrast'
+    scene.view_settings.look = 'High Contrast'
+    scene.view_settings.exposure = 0.5
+    scene.render.film_transparent = True
 
 def import_3d_model(object_path, scale_factor=0.5):
     """
@@ -221,21 +232,23 @@ def main():
     bpy.ops.object.select_all(action='DESELECT')
 
     # Adjust rendering settings, render the image and save it
-    adjust_rendering_settings()
+    adjust_rendering_settings(enable_gpu=enable_gpu)
     output_path = set_output_path()
     render_and_save(output_path)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 13:
+    if len(sys.argv) == 14:
         depth_map_path = sys.argv[4]
         texture_image_path = sys.argv[5]
         hdri_image_path = sys.argv[6]
         model_3d_path = sys.argv[7]
         object_coordinates = int(sys.argv[8]), int(sys.argv[9])
         normal_vector = float(sys.argv[10]), float(sys.argv[11]), float(sys.argv[12])
+        enable_gpu_arg = sys.argv[13]
+        enable_gpu = enable_gpu_arg.lower() == 'true'
     else:
-        print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/hdri_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm")
+        print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/hdri_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm enable_gpu")
         sys.exit(1)
 
     # Check if the file exists for depth map, texture image, hdri image, and 3D object
