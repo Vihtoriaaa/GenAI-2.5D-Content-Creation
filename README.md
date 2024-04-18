@@ -40,15 +40,15 @@ If you haven't already, install Conda for your OS by following the instructions 
 
 - If you have GPU (CUDA) available, create a new Conda environment using the following commands one by one:
 ```bash
-conda env create -n env -f gpu_environment.yaml
-conda activate env
+conda env create -f gpu_environment.yaml
+conda activate genai-env
 ```
 - If you have CPU only, use the following command:
 ```bash
-conda env create -n env -f cpu_environment.yaml
-conda activate env
+conda env create -f cpu_environment.yaml
+conda activate genai-env
 ```
-These commands will create a new Conda environment named 'env', install all the necessary packages depending on the selected configuration specified in the corresponding environment file, and activate it.
+These commands will create a new Conda environment named 'genai-env', install all the necessary packages depending on the selected configuration specified in the corresponding environment file, and activate it.
 
 ### Step 4. Pipeline Run
 
