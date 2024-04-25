@@ -1,9 +1,9 @@
 # Generative AI for 2.5D content creation with depth-guided object placement
 Bachelor Thesis Repository
 
-## Launch instructions
+## 🦿 Launch instructions
 
-### Step 1. Setting Up Blender as a Command Line Tool
+### 🧌 Step 1. Setting Up Blender as a Command Line Tool
 This guide will walk you through the process of setting up Blender as a command-line tool on various operating systems. Once set up, you'll be able to run Blender from the command line by simply typing `blender`.
 
 #### Prerequisites
@@ -17,7 +17,7 @@ Follow the steps outlined in the tutorial related to your OS to add Blender to t
 
 To ensure that Blender has been set up correctly, open a new command prompt/terminal window and type `blender`. Blender should launch without any errors.
 
-### Step 2. Access Repository Code
+### 📦 Step 2. Access Repository Code
 Clone the repository using the following command:
 ```bash
 git clone https://github.com/Vihtoriaaa/GenAI-2.5D-Content-Creation
@@ -28,7 +28,7 @@ Move to the proper project folder:
 cd GenAI-2.5D-Content-Creation/
 ```
 
-### Step 3. Set Up Conda environment
+### 🐍 Step 3. Set Up Conda environment
 To ensure smoother integration and management of dependencies, we recommend using the [Anaconda](https://www.anaconda.com/) package manager to avoid dependency/reproducibility problems.
 
 #### Install Conda
@@ -50,7 +50,7 @@ conda activate genai-env
 ```
 These commands will create a new Conda environment named 'genai-env', install all the necessary packages depending on the selected configuration specified in the corresponding environment file, and activate it.
 
-### Step 4. Pipeline Run
+### 🏃‍♀️ Step 4. Pipeline Run
 
 <details>
 <summary><b>GPU configuration run </b></summary>
@@ -109,5 +109,9 @@ python gpu_pipeline.py --prompt "Your text prompt here" --negative_prompt "Your 
 4.  You're done 🎉 Wait till the pipeline finishes its execution.
 </details>
 
-### License
+### 👩‍🌾 Contributors
+- [Viktoriia Maksymiuk](https://www.linkedin.com/in/vihtoriaaa/)
+- [PhD. Mikołaj Jankowski](https://scholar.google.com/citations?user=NENQPkQAAAAJ&hl=en)
+
+### 🎫 License
 Distributed under the [**MIT**](https://github.com/Vihtoriaaa/GenAI-2.5D-Content-Creation/blob/main/LICENSE) license.
