@@ -30,7 +30,6 @@ class Pipeline():
         self.output_folder_path = "results"
         self.max_depth = 255
         self.enable_gpu = False
-        #self.depth_to_normal_converter = DepthToNormalMap(self.depth_map_path, max_depth=self.max_depth)
 
     def upload_image(self, title):
         """
