@@ -49,7 +49,7 @@ conda activate genai-env
 conda env create -f cpu_environment.yaml
 conda activate genai-env
 ```
-These commands will create a new Conda environment named 'genai-env', install all the necessary packages depending on the selected configuration specified in the corresponding environment file, and activate it.
+These commands will create a new Conda environment named `genai-env`, install all the necessary packages depending on the selected configuration specified in the corresponding environment file, and activate it.
 
 ### 🏃‍♀️ Step 4. Pipeline Run
 
