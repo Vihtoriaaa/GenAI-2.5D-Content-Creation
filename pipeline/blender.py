@@ -36,12 +36,12 @@ def set_render_resolution(image_width, image_height):
     bpy.context.scene.render.resolution_x = image_width
     bpy.context.scene.render.resolution_y = image_height
 
-def add_camera():
+def add_camera(aspect_ratio, plane_size_x):
     """Adds a camera with orthographic projection to the Blender scene."""
-    bpy.ops.object.camera_add(enter_editmode=False, align='VIEW', location=(1, -3, 1), rotation=(1.5708, 0, 0))
+    bpy.ops.object.camera_add(enter_editmode=False, align='VIEW', location=(plane_size_x / 2, -3, 1), rotation=(1.5708, 0, 0))
     bpy.context.scene.camera = bpy.context.object
     bpy.context.object.data.type = 'ORTHO'
-    bpy.context.object.data.ortho_scale = 2
+    bpy.context.object.data.ortho_scale = 2.0 * aspect_ratio if aspect_ratio > 1 else 2.0
 
 def add_light(hdri_path):
     """
@@ -82,8 +82,7 @@ def import_3d_model(object_path, depth_value):
       depth_value (float, optional): The depth value at the object placement point.
     """
     supported_formats = {
-        ".fbx": bpy.ops.import_scene.fbx,
-        ".stl": bpy.ops.import_mesh.stl,
+        ".fbx": bpy.ops.import_scene.fbx
     }
     
     _, file_extension = os.path.splitext(object_path)
@@ -179,7 +178,7 @@ def main():
     # Get the active object, rotate and translate it
     obj = bpy.context.active_object
     obj.rotation_euler = (1.5708, 0, 0)
-    obj.location = (1, 0, 1)
+    obj.location = (plane_size_x / 2, 0, 1)
 
     # Create a new material with a texture image node
     new_material = bpy.data.materials.new(name="MyMaterial")
@@ -207,7 +206,7 @@ def main():
             break
     
     # add camera and change its resolution to image's size
-    add_camera()
+    add_camera(aspect_ratio, plane_size_x)
     set_render_resolution(image_width, image_height)
 
     old_objs = set(bpy.context.scene.objects)
