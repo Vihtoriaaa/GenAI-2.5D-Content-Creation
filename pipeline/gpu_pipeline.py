@@ -235,6 +235,7 @@ class Pipeline:
         """Get surface normal vector values from image normal map."""
         x, y = point
         self.normal_to_surface = self.depth_to_normal_converter.normals_map[y, x]
+        self.depth_value = self.depth_to_normal_converter.depth_map[y, x]
 
     def generate_blender_scene(self):
         """Calls Blender for scene generation and object placement."""
@@ -253,6 +254,7 @@ class Pipeline:
                 str(self.normal_to_surface[0]),
                 str(self.normal_to_surface[1]),
                 str(self.normal_to_surface[2]),
+                str(self.depth_value),
                 str(self.enable_gpu)
             ]
             subprocess.run(command)

@@ -63,21 +63,15 @@ def add_light(hdri_path):
 
 def adjust_rendering_settings(enable_gpu=False):
     scene = bpy.context.scene
-    scene.render.engine = 'CYCLES'
-    scene.cycles.use_gtao = True
-    scene.cycles.gtao_distance = 0.3
-    scene.cycles.gtao_quality = 0.3
-    scene.cycles.use_bloom = True
-    scene.cycles.shadow_cube_size = '1024'
-    scene.cycles.use_denoising = True
-    scene.cycles.samples = 200
-    scene.cycles.device = 'GPU' if enable_gpu else 'CPU'
+    scene.render.engine = 'BLENDER_WORKBENCH'
+    scene.display.shading.color_type = 'TEXTURE'
+    scene.display.shading.show_specular_highlight = False
     scene.view_settings.view_transform = 'Filmic'
-    scene.view_settings.look = 'High Contrast'
+    scene.view_settings.look = 'Medium High Contrast'
     scene.view_settings.exposure = 0.5
     scene.render.film_transparent = True
 
-def import_3d_model(object_path, scale_factor=0.5):
+def import_3d_model(object_path, depth_value):
     """
     Imports a 3D model file into the Blender scene.
 
@@ -85,7 +79,7 @@ def import_3d_model(object_path, scale_factor=0.5):
 
     Args:
       object_path (str): The path to the 3D model file.
-      scale_factor (float, optional): The scaling factor applied to the imported model. Default is 0.5.
+      depth_value (float, optional): The depth value at the object placement point.
     """
     supported_formats = {
         ".fbx": bpy.ops.import_scene.fbx,
@@ -98,6 +92,8 @@ def import_3d_model(object_path, scale_factor=0.5):
     if file_format in supported_formats:
         try:
             supported_formats[file_format](filepath=object_path)
+            max_scale = 0.85
+            scale_factor = max_scale * depth_value
             bpy.ops.transform.resize(value=(scale_factor, scale_factor, scale_factor))
         except Exception as e:
             print(f"Importing {file_format} failed: {e}")
@@ -216,7 +212,7 @@ def main():
 
     old_objs = set(bpy.context.scene.objects)
     # import selected 3D model
-    import_3d_model(model_3d_path)
+    import_3d_model(model_3d_path, depth_value)
     imported_objs = set(bpy.context.scene.objects) - old_objs
     imported_obj_name = [obj.name for obj in imported_objs]
 
@@ -238,17 +234,18 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 14:
+    if len(sys.argv) == 15:
         depth_map_path = sys.argv[4]
         texture_image_path = sys.argv[5]
         hdri_image_path = sys.argv[6]
         model_3d_path = sys.argv[7]
         object_coordinates = int(sys.argv[8]), int(sys.argv[9])
         normal_vector = float(sys.argv[10]), float(sys.argv[11]), float(sys.argv[12])
-        enable_gpu_arg = sys.argv[13]
+        depth_value = float(sys.argv[13])
+        enable_gpu_arg = sys.argv[14]
         enable_gpu = enable_gpu_arg.lower() == 'true'
     else:
-        print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/hdri_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm enable_gpu")
+        print("Usage: blender -P blender_code.py -- /path/to/your/depth_map /path/to/texture_image /path/to/hdri_image /path/to/3d_object x_coord z_coord x_norm y_norm z_norm depth_value enable_gpu")
         sys.exit(1)
 
     # Check if the file exists for depth map, texture image, hdri image, and 3D object
