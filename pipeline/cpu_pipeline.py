@@ -1,6 +1,8 @@
 import os
 import cv2
 import subprocess
+import numpy as np
+from PIL import Image
 from datetime import datetime
 from tkinter import filedialog as fd
 from depthToNormal import DepthToNormalMap
@@ -28,7 +30,7 @@ class Pipeline():
         self.output_folder_path = "results"
         self.max_depth = 255
         self.enable_gpu = False
-        self.depth_to_normal_converter = DepthToNormalMap(self.depth_map_path, max_depth=self.max_depth)
+        #self.depth_to_normal_converter = DepthToNormalMap(self.depth_map_path, max_depth=self.max_depth)
 
     def upload_image(self, title):
         """
@@ -161,12 +163,33 @@ class Pipeline():
         except Exception as exc:
             print(f"Error while generating HDRI image: {exc}")
 
+    def invert_depth_map(self):
+        """Invert depth map image and save it."""
+        depth_image = Image.open(self.depth_map_path)
+        depth_array = np.array(depth_image)
+        inverted_depth_array = np.abs(depth_array - 2**16 - 1)
+        inverted_depth_array_uint16 = inverted_depth_array.astype(np.uint16)
+        inverted_depth_image = Image.fromarray(inverted_depth_array_uint16)
+        
+        image_name = os.path.basename(self.depth_map_path)
+        name, ext = os.path.splitext(image_name)
+        output_dir = "results"
+        
+        output_path = os.path.join(output_dir, f"{name}_depth.png")
+        inverted_depth_image.save(output_path)
+        self.depth_map_path = output_path
+        print("Image saved:", output_path)
+
     def run_pipeline(self):
         """Run the pipeline."""
         startTime = datetime.now()
 
         if not os.path.exists(self.output_folder_path):
             os.makedirs(self.output_folder_path)
+
+        self.invert_depth_map()
+        self.depth_to_normal_converter = DepthToNormalMap(self.depth_map_path,
+                                                          max_depth=self.max_depth)
 
         self.get_normal_map()
         self.get_surface_normal_vector(self.selected_point)

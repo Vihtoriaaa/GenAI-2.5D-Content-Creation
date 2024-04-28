@@ -46,10 +46,15 @@ class DepthToNormalMap:
         x = x.astype(np.float32)
         y = y.astype(np.float32)
         
-        # add here * 255 too (self.scaling_factor)
         scaled_image = (self.depth_map * self.scaling_factor)
         depth_float32 = scaled_image.astype(np.float32)
         depth_float32 = cv2.GaussianBlur(depth_float32, (7, 7), 1.4)
+        # Median Filter 
+        # depth_float32 = cv2.medianBlur(depth_float32, 5)
+        # Bilateral Filter:
+        # depth_float32 = cv2.bilateralFilter(depth_float32, 9, 75, 75)
+        # Circular 
+        # depth_float32 = self.circular_filter(depth_float32, radius=9)
 
         dx = cv2.Scharr(depth_float32, cv2.CV_32F, 1, 0)
         dy = cv2.Scharr(depth_float32, cv2.CV_32F, 0, 1)
@@ -58,12 +63,6 @@ class DepthToNormalMap:
         norm = np.sqrt(np.sum(normal**2, axis=2, keepdims=True))
         normal = np.divide(normal, norm, out=np.zeros_like(normal), where=norm != 0)
 
-        # Median Filter 
-        # normal = cv2.medianBlur(normal.astype(np.float32), 5) # 5 the best
-        # Bilateral Filter:
-        #normal = cv2.bilateralFilter(normal.astype(np.float32), 9, 75, 75)
-        # Circular 
-        # normal = self.circular_filter(normal, radius=8) # 9 the best 
         self.normals_map = normal
 
     def save_normal_map(self, output_path: str):
@@ -72,7 +71,6 @@ class DepthToNormalMap:
         Args:
             output_path (str): The path to save the normal map image file.
         """
-        # i should do these next 2 lines as otherwise the image is black
         normal = (self.normals_map + 1) * 127.5
         normal = normal.clip(0, 255).astype(np.uint8)
         normal_bgr = cv2.cvtColor(normal, cv2.COLOR_RGB2BGR)
@@ -190,7 +188,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     converter = DepthToNormalMap(args.input, max_depth=args.max_depth)
-    converter.calculate_normals() # calculating normal map
+    converter.calculate_normals()
 
     if args.save_normal_map == "y":
         converter.save_normal_map(args.norm_map_path)
