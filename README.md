@@ -92,7 +92,7 @@ Now, to run the 2.5D content creation with depth-guided object placement pipelin
 3.  Wait for the pipeline to generate the scene image. It is necessary to note that you can regenerate images if needed; you will be asked during the generation process whether to proceed with the generated image.
 4.  After the scene image is generated, you will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension.
 5.  When the object is selected, you will be asked to choose where to place the previously provided object. A scene image is displayed. You can then simply click on any location within the generated scene image where you wish to place your 3D object. When the desired location is selected, press 'Enter' to continue or 'R' to reselect the location.
-6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under `pipeline/results` folder, check them out!🧍‍♀️
+6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under the `rendered_results` folder, named as the pipeline execution date; check them out!🧍‍♀️
 
 Other command line arguments that can be provided to configure the pipeline run are listed in the table below:
 | Name | Description | Type | Default Value |
@@ -154,7 +154,7 @@ Now, to run the 2.5D content creation with depth-guided object placement pipelin
 3.  Run `python cpu_pipeline.py` to launch the pipeline.
 4.  You will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension.
 5.  When the object is selected, you will be asked to choose where to place the previously provided object. A scene image is displayed. You can then simply click on any location within the generated scene image where you wish to place your 3D object. When the desired location is selected, press 'Enter' to continue or 'R' to reselect the location.
-6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under `pipeline/results` folder, check them out!🧍‍♀️
+6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under the `rendered_results` folder, named as the pipeline execution date; check them out!🧍‍♀️
 </details>
 
 ### 🗃️ Repository Organization
