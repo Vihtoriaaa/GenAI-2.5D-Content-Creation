@@ -54,6 +54,29 @@ These commands will create a new Conda environment named `genai-env`, install al
 ### 🏃‍♀️ Step 4. Pipeline Run
 
 <details>
+<summary><b>CPU configuration set up and run</b></summary>
+   The CPU-based version is for users with limited computational resources, therefore, certain pipeline steps, such as scene image and depth map generation, will rely on external services. This approach ensures all users can test and use the project regardless of their system’s capabilities. To enable pipeline run, follow the next steps.
+
+#### 🧝‍♀️ Scene image generation with Stable Diffusion XL (SDXL)
+For our pipeline, we decided to utilize the **Juggernaut v7** model, a variant of the Stable Diffusion XL (SDXL) model. The SDXL model is an improved version of the original SD, providing more realistic and detailed generated images. The Juggernaut v7 model is a widely recognized and selected model by the GenAI community on CivitAI, a platform for accessing and collaborating on generative AI models and research. To generate a scene image, you can use spaces on Hugging Face for SDXL. At least two Hugging Face spaces are available for scene image generation with the Juggernaut v7 model. These are: [Option A](https://huggingface.co/spaces/artificialguybr/JUGGERNAUT-XL-FREE-DEMO) and [Option B](https://huggingface.co/spaces/prodia/sdxl-stable-diffusion-xl). Generate the needed scene image by providing the text prompt describing it, and then download the generated image and put it into the project folder somewhere.
+
+#### 🦆 Depth map estimation with Marigold
+For our pipeline, we decided to utilize the [Marigold](https://marigoldmonodepth.github.io) model for depth map estimation because of its significant advancement for the Monocular Depth Estimation (MDE) task within the computer vision area. Moreover, it is fast and easy to use to capture the necessary depth information for realistic object placement. To generate a depth map for the scene image, you can use the following [Hugging Face space](https://huggingface.co/spaces/prs-eth/marigold). Please provide the previously SD-generated and saved scene image as input and wait for the output results. Download an image with "_depth_16bit.png" on its name. This is a file we need for our pipeline.
+
+#### 🎀 Pipeline Run
+Now, to run the 2.5D content creation with depth-guided object placement pipeline, follow the next steps using terminal:
+
+1.  
+   Have generated scene image, its depth map, and selected 3D object to appropriate folders.
+   
+2.  Run `cd pipeline/` to move to folder with pipeline code.
+3.  Run `python cpu_pipeline.py` to launch the pipeline.
+4.  You will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension.
+5.  When the object is selected, you will be asked to choose where to place the previously provided object. A scene image is displayed. You can then simply click on any location within the generated scene image where you wish to place your 3D object. When the desired location is selected, press 'Enter' to continue or 'R' to reselect the location.
+6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under the `rendered_results` folder, named as the pipeline execution date; check them out!🧍‍♀️
+</details>
+
+<details>
 <summary><b>GPU configuration set up and run </b></summary>
    
    The GPU-accelerated version is designed for users with local GPU resources who can run the entire pipeline workflow processes locally. For optimal performance when running the GPU version, it is recommended to use an Nvidia GPU with CUDA support and at least 6–8 GB of VRAM, as this configuration ensures efficient processing and sufficient memory for running the pipeline locally.
@@ -132,29 +155,6 @@ Additional options for certain arguments:
     - `"prs-eth/marigold-v1-0"`
     - `"Bingxin/Marigold"`
 
-</details>
-
-<details>
-<summary><b>CPU configuration set up and run</b></summary>
-   The CPU-based version is for users with limited computational resources, therefore, certain pipeline steps, such as scene image and depth map generation, will rely on external services. This approach ensures all users can test and use the project regardless of their system’s capabilities. To enable pipeline run, follow the next steps.
-
-#### 🧝‍♀️ Scene image generation with Stable Diffusion XL (SDXL)
-For our pipeline, we decided to utilize the **Juggernaut v7** model, a variant of the Stable Diffusion XL (SDXL) model. The SDXL model is an improved version of the original SD, providing more realistic and detailed generated images. The Juggernaut v7 model is a widely recognized and selected model by the GenAI community on CivitAI, a platform for accessing and collaborating on generative AI models and research. To generate a scene image, you can use spaces on Hugging Face for SDXL. At least two Hugging Face spaces are available for scene image generation with the Juggernaut v7 model. These are: [Option A](https://huggingface.co/spaces/prodia/sdxl-stable-diffusion-xl) and [Option B](https://huggingface.co/spaces/artificialguybr/JUGGERNAUT-XL-FREE-DEMO). Generate the needed scene image by providing the text prompt describing it, and then download the generated image and put it into the project folder somewhere.
-
-#### 🦆 Depth map estimation with Marigold
-For our pipeline, we decided to utilize the [Marigold](https://marigoldmonodepth.github.io) model for depth map estimation because of its significant advancement for the Monocular Depth Estimation (MDE) task within the computer vision area. Moreover, it is fast and easy to use to capture the necessary depth information for realistic object placement. To generate a depth map for the scene image, you can use the following [Hugging Face space](https://huggingface.co/spaces/prs-eth/marigold). Please provide the previously SD-generated and saved scene image as input and wait for the output results. Download an image with "_depth_16bit.png" on its name. This is a file we need for our pipeline.
-
-#### 🎀 Pipeline Run
-Now, to run the 2.5D content creation with depth-guided object placement pipeline, follow the next steps using terminal:
-
-1.  
-   Have generated scene image, its depth map, and selected 3D object to appropriate folders.
-   
-2.  Run `cd pipeline/` to move to folder with pipeline code.
-3.  Run `python cpu_pipeline.py` to launch the pipeline.
-4.  You will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension.
-5.  When the object is selected, you will be asked to choose where to place the previously provided object. A scene image is displayed. You can then simply click on any location within the generated scene image where you wish to place your 3D object. When the desired location is selected, press 'Enter' to continue or 'R' to reselect the location.
-6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under the `rendered_results` folder, named as the pipeline execution date; check them out!🧍‍♀️
 </details>
 
 ### 🗃️ Repository Organization
