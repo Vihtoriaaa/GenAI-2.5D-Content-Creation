@@ -38,7 +38,7 @@ def set_render_resolution(image_width, image_height):
 
 def add_camera(aspect_ratio, plane_size_x):
     """Adds a camera with orthographic projection to the Blender scene."""
-    bpy.ops.object.camera_add(enter_editmode=False, align='VIEW', location=(plane_size_x / 2, -3, 1), rotation=(1.5708, 0, 0))
+    bpy.ops.object.camera_add(enter_editmode=False, align='VIEW', location=(plane_size_x, -3, 1), rotation=(1.5708, 0, 0))
     bpy.context.scene.camera = bpy.context.object
     bpy.context.object.data.type = 'ORTHO'
     bpy.context.object.data.ortho_scale = 2.0 * aspect_ratio if aspect_ratio > 1 else 2.0
@@ -154,12 +154,13 @@ def main():
     aspect_ratio = image_width / image_height
 
     # Set the plane size based on the aspect ratio
-    plane_size_x = 2 * aspect_ratio
-    plane_size_y = 2
+    plane_size_x = aspect_ratio
+    plane_size_y = 1
 
     # Add a plane with the calculated size
-    bpy.ops.mesh.primitive_plane_add(size=1, enter_editmode=True)
-    bpy.ops.transform.resize(value=(plane_size_x, plane_size_y, 1))
+    bpy.ops.mesh.primitive_plane_add(size=2, enter_editmode=False, scale=(1, 1, 1))
+    bpy.context.object.scale[0] = aspect_ratio
+    bpy.ops.object.editmode_toggle()
     # Subdivide the plane for smoother deformation
     bpy.ops.mesh.subdivide(number_cuts=100)
 
@@ -178,7 +179,7 @@ def main():
     # Get the active object, rotate and translate it
     obj = bpy.context.active_object
     obj.rotation_euler = (1.5708, 0, 0)
-    obj.location = (plane_size_x / 2, 0, 1)
+    obj.location = (plane_size_x, 0, 1)
 
     # Create a new material with a texture image node
     new_material = bpy.data.materials.new(name="MyMaterial")
