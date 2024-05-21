@@ -71,7 +71,7 @@ Now, to run the 2.5D content creation with depth-guided object placement pipelin
    
 2.  Run `cd pipeline/` to move to folder with pipeline code.
 3.  Run `python cpu_pipeline.py` to launch the pipeline.
-4.  You will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension.
+4.  You will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension. If you don't have one, you can download one from websites that offer existing 3D models, for instance, [TurboSquid](https://www.turbosquid.com).
 5.  When the object is selected, you will be asked to choose where to place the previously provided object. A scene image is displayed. You can then simply click on any location within the generated scene image where you wish to place your 3D object. When the desired location is selected, press 'Enter' to continue or 'R' to reselect the location.
 6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under the `rendered_results` folder, named as the pipeline execution date; check them out!🧍‍♀️
 </details>
@@ -113,7 +113,7 @@ Now, to run the 2.5D content creation with depth-guided object placement pipelin
    
 2.  To launch the pipeline, run `python gpu_pipeline.py --prompt "{your scene description}"`. Provide the scene description you want to generate for your content.
 3.  Wait for the pipeline to generate the scene image. It is necessary to note that you can regenerate images if needed; you will be asked during the generation process whether to proceed with the generated image.
-4.  After the scene image is generated, you will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension.
+4.  After the scene image is generated, you will be asked to provide the 3D object you want to place within the generated scene; please choose an appropriate one. The object has to be of ".fbx" extension. If you don't have one, you can download one from websites that offer existing 3D models, for instance, [TurboSquid](https://www.turbosquid.com).
 5.  When the object is selected, you will be asked to choose where to place the previously provided object. A scene image is displayed. You can then simply click on any location within the generated scene image where you wish to place your 3D object. When the desired location is selected, press 'Enter' to continue or 'R' to reselect the location.
 6.  You're done 🎉 Wait till the pipeline finishes its execution. Generated 2.5D content results are saved under the `rendered_results` folder, named as the pipeline execution date; check them out!🧍‍♀️
 
