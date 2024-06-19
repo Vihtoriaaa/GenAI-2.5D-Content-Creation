@@ -54,7 +54,7 @@ These commands will create a new Conda environment named `genai-env`, install al
 ### 🏃‍♀️ Step 4. Pipeline Run
 
 <details>
-<summary><b>:paperclip: CPU configuration set up and run</b></summary>
+<summary><b>CPU configuration set up and run</b></summary>
    The CPU-based version is for users with limited computational resources, therefore, certain pipeline steps, such as scene image and depth map generation, will rely on external services. This approach ensures all users can test and use the project regardless of their system’s capabilities. To enable pipeline run, follow the next steps.
 
 #### 🧝‍♀️ Scene image generation with Stable Diffusion XL (SDXL)
@@ -77,7 +77,7 @@ Now, to run the 2.5D content creation with depth-guided object placement pipelin
 </details>
 
 <details>
-<summary><b>:paperclip: GPU configuration set up and run </b></summary>
+<summary><b>GPU configuration set up and run </b></summary>
    
    The GPU-accelerated version is designed for users with local GPU resources who can run the entire pipeline workflow processes locally. For optimal performance when running the GPU version, it is recommended to use an Nvidia GPU with CUDA support and at least 6–8 GB of VRAM, as this configuration ensures efficient processing and sufficient memory for running the pipeline locally.
 
